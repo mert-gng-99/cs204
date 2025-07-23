@@ -60,16 +60,48 @@ bool openandcreate(ifstream &input, int &numRows, int &numWords, vector<vector<c
 }
 
 
-
+// Function to read the matrix in spiral order and print it
 void Spirallreadandprint(vector<vector<char>> &matrix) {
     int top = 0;
     int bottom = matrix.size() - 1;
     int left = 0;
     int right = matrix[0].size() - 1;
 
-    while() // to be continiued...
+    while (top <= bottom && left <= right) {
+        // Print the top row
+        for (int i = left; i <= right; ++i) {
+            cout << matrix[top][i] << " ";
+        }
+        cout << "---"; // ne yazılacağını unuttum internetim yok bunu unutma değiştirmeyi
+        top = top +1; // preyle postu karıştırdım bu kodu okuyunca slayta bak
+
+        // Print the right column
+        for (int i = top; i <= bottom; ++i) {
+            cout << matrix[i][right] << " ";
+        }
+        right = right - 1;
+        cout << "---";
+        // Print the bottom row if still within bounds
+        if (top <= bottom) {
+            for (int i = right; i >= left; --i) {
+                cout << matrix[bottom][i] << " ";
+            }
+            bottom = bottom -1 ;
+        }
+        cout << "---";
+        // Print the left column if still within bounds
+        if (left <= right) {
+            for (int i = bottom; i >= top; --i) {
+                cout << matrix[i][left] << " ";
+            }
+            left = left + 1;
+        }
+        cout << "---";
+    }
     
-    cout << endl;
+    // Yarın test etmeyi unutma 
+    
+    
 }
 
 
