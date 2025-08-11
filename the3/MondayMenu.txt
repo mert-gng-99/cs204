@@ -1,0 +1,10 @@
+Cappuccino 4.3 150
+Flat-White 4.4 155
+Mocha 4.6 180
+Chai-Latte 4.2 170
+Iced-Coffee 4.0 145
+Macchiato 4.1 140
+Turkish-Coffee 4.7 130
+Caramel-Macchiato 4.5 175
+Matcha-Latte 4.4 190
+Hot-Chocolate 4.8 165

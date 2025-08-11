@@ -1,0 +1,8 @@
+Espresso 3.9 125
+Latte 4.3 160
+Cold-Brew 4.5 170
+Vanilla-Frappuccino 4.6 185
+Cortado 4.0 135
+Iced-Tea-Peach 4.2 150
+Hazelnut-Latte 4.4 175
+Decaf-Americano 3.8 140
