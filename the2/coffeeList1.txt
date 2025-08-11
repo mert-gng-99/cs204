@@ -1,0 +1,4 @@
+Caffe-Latte 4.5 160
+Caramel-Macchiato 4.6 180
+Green-Tea-Latte 4.2 160
+Pink-Drink 4.5 175

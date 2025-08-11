@@ -1,0 +1,6 @@
+Espresso 4.1 120
+Caramel-Frappuccino 4.7 190
+Vanilla-Latte 4.5 165
+White-Chocolate-Mocha 4.6 185
+Pumpkin-Spice-Latte 4.8 195
+Americano 3.7 160
