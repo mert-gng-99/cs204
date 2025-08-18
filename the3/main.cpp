@@ -1,7 +1,7 @@
 // cs204 - the3 starbucks order management system
 // Mert Gungor 34159
 //
-// NOTE: linked-list ONLY (no arrays/vectors).
+
 // queue (orders) = singly linked list
 // stack (drinks) = singly linked list
 // menu = circular doubly linked list (cdll) from the2 (only for storing items)
@@ -15,44 +15,42 @@
 #include <cctype>
 using namespace std;
 
-// ===================== tiny helpers =====================
 
-// func: tolowerstr -> make all letters lower-case, i forgat std api name lol
-// super basic O(n) pass, not fancy at all
-string tolowerstr(string s)
-{
-    for (size_t i = 0; i < s.length(); i++)
-    {
-        s[i] = (char)tolower((unsigned char)s[i]);
+
+
+// taken from the the2 authors solution to not deal with extra errors :D
+string tolowerstr(string s) {
+    for (char& c : s) {
+        c = tolower(static_cast<unsigned char>(c));
     }
     return s;
 }
 
-// func: equals_nocase -> compare strings w/out caring upper/lower (case ignoor)
-bool equals_nocase(const string& a, const string& b)
-{
+// also taken from my the2 solution.
+bool equals_nocase(const string& a, const string& b){
     return tolowerstr(a) == tolowerstr(b);
 }
 
-// func: trim -> cut spaces from begin&end (probly works ok)
-string trim(const string& s)
-{
-    int i = 0;
-    int j = (int)s.length();
+// // also this is taken from my the2 solution.
+string trim(const string& s) {
+    
+    int i = 0; // i is index from start
+    int j = s.length(); // j is index after last char
 
-    // // cout << "[DBG] start trim\n";
-    // loop: skip head spases (typo ok), move i forward until non-space
-    while (i < j && isspace((unsigned char)s[i]))
-    {
-        // // cout << "[DBG] skip head: " << s[i] << endl;
-        i++;
+    // skipping the first spaces (left side)
+    while ((i < j )&& (isspace(s[i]))){
+        // cout << "skip left at i=" << i << endl; // added for debug
+        i = i + 1;
     }
-    // loop: skip tail whites (ye i know spelling), move j back
-    while (j > i && isspace((unsigned char)s[j - 1]))
+
+    // skipping the last spaces (right side)
+    while ((j > i) && (isspace(s[j - 1])))
     {
-        // // cout << "[DBG] skip tail: " << s[j-1] << endl;
-        j--;
+        // cout << "skip right at j=" << j << endl; // added for debug
+        j = j - 1;
     }
+
+    // cout << "trim cut from " << i << " len " << (j - i) << endl; // added for debug
     return s.substr(i, j - i);
 }
 
@@ -76,22 +74,21 @@ struct mnode
 };
 
 mnode* menu_head = NULL;       // first item
-int     menu_next_id = 1;      // auto id
+int menu_next_id = 1;      // auto id
 
-// func: parse_menu_line -> read 3 toks: name rating price ; if extra token then nope
-// student style parsing, no exepctions etc
+// taken from my the2 solution. edited little bit
 bool parse_menu_line(const string& line, string& nm, double& rt, double& pr)
 {
     // // cout << "[DBG] parse line: " << line << endl;
     istringstream iss(line);
-    if (!(iss >> nm >> rt >> pr))
-    {
+    if (!(iss >> nm >> rt >> pr))  {
         // // cout << "[DBG] parse fail\n";
         return false;
     }
     string extra;
-    if (iss >> extra)
-    {
+
+    
+    if (iss >> extra){
         // // cout << "[DBG] extra token: " << extra << endl;
         return false;
     }
@@ -99,33 +96,35 @@ bool parse_menu_line(const string& line, string& nm, double& rt, double& pr)
     return true;
 }
 
-// func: insert_tail_menu -> put new drink to end of cdll (tail), update prev/next links
+// taken from my the2 solution. edited little bit
 void insert_tail_menu(const string& name, double rating, double price)
 {
     mnode* n = new mnode();
     n->data.id = menu_next_id++;
     n->data.name = name;
+
     n->data.rating = rating;
+
     n->data.price = price;
 
-    if (menu_head == NULL)
-    {
+    if (menu_head == NULL){
         n->next = n;
         n->prev = n;
         menu_head = n;
     }
-    else
-    {
+    else{
         mnode* tail = menu_head->prev;
         n->prev = tail;
         n->next = menu_head;
+
         tail->next = n;
         menu_head->prev = n;
+
     }
 }
 
-// func: find_by_name_menu -> go around circle once, case-insens search
-mnode* find_by_name_menu(const string& name)
+// func: cind_by_name_menu -> go around circle once, case-insens search
+mnode* cind_by_name_menu(const string& name)
 {
     if (menu_head == NULL)
     {
@@ -133,11 +132,12 @@ mnode* find_by_name_menu(const string& name)
     }
     mnode* cur = menu_head;
     // loop: traverse cdll one full cycle, chek names (speling? idk)
-    do
-    {
-        if (equals_nocase(cur->data.name, name))
-        {
+    do{
+
+        if (equals_nocase(cur->data.name, name)){
+
             return cur;
+
         }
         cur = cur->next;
     }
@@ -147,8 +147,9 @@ mnode* find_by_name_menu(const string& name)
 }
 
 // func: print_drink -> dump fields as required, simple i/o
-void print_drink(const drink& d)
-{
+void print_drink(const drink& d){
+
+
     cout << "ID: " << d.id << endl;
     cout << "Name: " << d.name << endl;
     cout << "Rating: " << d.rating << endl;
@@ -156,10 +157,10 @@ void print_drink(const drink& d)
 }
 
 // func: show_menu_forward -> print menu from head forward, stops when loops back
-void show_menu_forward()
-{
-    if (menu_head == NULL)
-    {
+void show_menu_forward(){
+
+    if (menu_head == NULL){
+
         cout << "The menu is empty." << endl;
         cout << "---" << endl;
         return;
@@ -168,15 +169,16 @@ void show_menu_forward()
     mnode* cur = menu_head;
     // loop: classic while(true) beacuse cdll end is when next==head
     // loop: keep taking inputs until user types enough (case-insesitive)
-    // loop: main menu loop, reads choice every time (kinda basic ui)
+    // loop: main menu loop, reads choice every time
     while (true)
     {
         print_drink(cur->data);
         cout << "---" << endl;
 
-        if (cur->next == menu_head)
-        {
+        if (cur->next == menu_head){
+
             break;
+
         }
         cur = cur->next;
     }
@@ -185,8 +187,8 @@ void show_menu_forward()
 // func: clear_menu_all -> free whole cdll memmory, reset head/id
 void clear_menu_all()
 {
-    if (menu_head == NULL)
-    {
+    if (menu_head == NULL){
+
         return;
     }
 
@@ -207,21 +209,23 @@ void clear_menu_all()
 // func: get_price_from_menu -> helper to fetch price by name (case-insens)
 bool get_price_from_menu(const string& name, double& out_price)
 {
-    mnode* f = find_by_name_menu(name);
-    if (!f)
-    {
+    mnode* f = cind_by_name_menu(name);
+    if (!f){
         return false;
     }
-    out_price = f->data.price;
+
+    out_price = f->data.price; // did not tried but it is worked in code so 
+
+
     return true;
 }
 
-// ===================== dynamic stack for drinks (linked list ONLY) =====================
+// ===================== dynamic stack for drinks (linked list only) =====================
 
 struct drinkitem
 {
     string name;
-    int    sugar;
+    int sugar;
 };
 
 struct snode
@@ -229,14 +233,14 @@ struct snode
     drinkitem data;
     snode*    next;
 
-    snode(const string& n, int s) : next(NULL)
-    {
+    snode(const string& n, int s) : next(NULL) {
+
         data.name  = n;
         data.sugar = s;
     }
 };
 
-// class: drinkstack -> LIFO for drinks, single linked list, very basic implemant
+// class: drinkstack -> LIFO for drinks, single linked list)
 // has destructor to avoid mem leak (i hope)
 class drinkstack
 {
@@ -246,8 +250,7 @@ public:
 
     drinkstack() : topnode(NULL) { }
 
-    ~drinkstack()
-    {
+    ~drinkstack(){
         clear();
     }
 
@@ -256,24 +259,28 @@ public:
         return topnode == NULL;
     }
 
-    void push(const string& name, int sugar)
-    {
+    void push(const string& name, int sugar){
+
+
         // // cout << "[DBG] push " << name << " sugar=" << sugar << endl;
         snode* x = new snode(name, sugar);
         x->next = topnode;
         topnode = x;
     }
 
-    bool pop(drinkitem& out)
-    {
-        if (topnode == NULL)
-        {
+    bool pop(drinkitem& out){
+
+        if (topnode == NULL){
+
             return false;
         }
 
         snode* x = topnode;
+
         out = x->data;
         topnode = x->next;
+
+
         delete x;
         return true;
     }
@@ -288,7 +295,7 @@ public:
             cur = cur->next;
         }
     }
-    void stats(int& cnt, long long& sugar_sum) const
+    void stats(int& cnt, int& sugar_sum) const
     {
         // for-loop: count items & sum sugars, very straigth forward
         cnt = 0;
@@ -318,9 +325,9 @@ public:
 
 struct order
 {
-    int        id;
+    int id;
     drinkstack drinks;
-    double     totalprice;
+    double totalprice;
 
     order(int i = 0) : id(i), totalprice(0.0) { }
 };
@@ -349,8 +356,8 @@ public:
         clear_all();
     }
 
-    bool isempty() const
-    {
+    bool isempty() const{
+
         return front == NULL;
     }
 
@@ -359,8 +366,9 @@ public:
         // // cout << "[DBG] enqueue id=" << o->id << endl;
         qnode* q = new qnode(o);
 
-        if (rear == NULL)
-        {
+        if (rear == NULL){
+
+            
             front = q;
             rear  = q;
         }
@@ -371,18 +379,20 @@ public:
         }
     }
 
-    order* dequeue()
-    {
-        if (front == NULL)
-        {
+    order* dequeue(){
+
+
+        if (front == NULL){
+
+
             return NULL;
         }
 
         qnode* q = front;
         front = front->next;
 
-        if (front == NULL)
-        {
+        if (front == NULL){
+
             rear = NULL;
         }
 
@@ -391,7 +401,7 @@ public:
         return o;
     }
 
-    // returns: -1 empty, 0 not found, 1 canceled
+    // returns: -1 empty, 0 not found, 1 canceled for debug puroses
     int cancel_by_id(int id)
     {
         if (front == NULL)
@@ -460,14 +470,14 @@ public:
             cur  = cur->next;
         }
 
-        if (cur == NULL)
-        {
+        if (cur == NULL){
+            
             return 0;
         }
 
         prev->next = cur->next;
-        if (cur == rear)
-        {
+        if (cur == rear) {
+
             rear = prev;
         }
 
@@ -535,10 +545,10 @@ void print_system_menu()
 }
 
 // stats
-long long completed_orders = 0;
-long long drinks_sold      = 0;
-long long sugar_packs      = 0;
-double    revenue          = 0.0;
+int completed_orders = 0;
+int drinks_sold      = 0;
+int sugar_packs      = 0;
+double revenue = 0.0;
 
 // id generator
 int next_order_id = 100;
@@ -554,46 +564,46 @@ void load_menu_startup()
     getline(cin, fname);
     fname = trim(fname);
 
-    ifstream fin(fname);
+    ifstream cin;
+    cin.open(fname);
 
-    if (fin.fail())
+    if (cin.fail())
     {
-        // samples do not show an explicit error line here, so keep silent
+       
         // // cout << "[DBG] cannot open: " << fname << endl;
     }
     else
     {
         string line;
         // loop: read each line from file, parse and insert to cdll
-        while (getline(fin, line))
-        {
-            line = trim(line);
-            if (line.empty())
+        while (getline(cin, line))
             {
-                continue;
-            }
-
-            string name;
-            double rating;
-            double price;
-
-            if (parse_menu_line(line, name, rating, price))
-            {
-                if (find_by_name_menu(name))
+                line = trim(line);
+                if (!line.empty())   
                 {
-                    cout << "The drink " << name << " is already in the menu." << endl;
-                }
-                else
-                {
-                    insert_tail_menu(name, rating, price);
-                    cout << "The drink " << name << " is added to the menu." << endl;
-                }
-            }
-            else
-            {
-                // // cout << "[DBG] bad line: " << line << endl;
+                    string name;
+                    double rating;
+                    double price;
+                
+                    if (parse_menu_line(line, name, rating, price))
+                    {
+                        if (cind_by_name_menu(name))
+                        {
+                            cout << "The drink " << name << " is already in the menu." << endl;
+                        }
+                        else
+                        {
+                            insert_tail_menu(name, rating, price);
+                            cout << "The drink " << name << " is added to the menu." << endl;
+                        }
+                    }
+                    else
+                    {
+                        // // cout << "[DBG] bad line: " << line << endl;
+                    }
             }
         }
+
         cout << "---" << endl;
     }
 
@@ -608,8 +618,9 @@ void place_new_order(orderqueue& q)
     order* ord = new order(next_order_id);
     bool   added_any = false;
 
-    while (true)
-    {
+    while (true){
+
+
         cout << "Enter: ";
 
         string line;
@@ -621,22 +632,18 @@ void place_new_order(orderqueue& q)
 
         line = trim(line);
 
-        if (line.empty())
+        if (!line.empty())   
         {
-            cout << "Invalid format. Enter name and sugar." << endl;
-            continue;
-        }
+            if (equals_nocase(line, "enough"))
+            {
+                break;
+            }
 
-        if (equals_nocase(line, "enough"))
-        {
-            break;
-        }
+            string name;
+            int sugar;
+            bool ok = false;
 
-        string     name;
-        long long  sugar;
-        bool       ok = false;
-
-        {
+            
             istringstream iss(line);
             if (iss >> name >> sugar)
             {
@@ -646,26 +653,34 @@ void place_new_order(orderqueue& q)
                     ok = true;   // exactly two tokens
                 }
             }
-        }
+        
 
-        if (!ok)
+            if (ok)  {
+
+                mnode* m = cind_by_name_menu(name);
+
+                if (m)  
+                {
+                    ord->drinks.push(name, (int)sugar);
+                    ord->totalprice += m->data.price;
+                    added_any = true;
+                }
+                else
+                {
+                    cout << "Drink '" << name << "' not found. Try again." << endl;
+                }
+            }
+            else{
+
+                cout << "Invalid format. Enter name and sugar." << endl;
+            }
+        }
+        else
         {
             cout << "Invalid format. Enter name and sugar." << endl;
-            continue;
         }
-
-        mnode* m = find_by_name_menu(name);
-
-        if (!m)
-        {
-            cout << "Drink '" << name << "' not found. Try again." << endl;
-            continue;
-        }
-
-        ord->drinks.push(m->data.name, (int)sugar);
-        ord->totalprice += m->data.price;
-        added_any = true;
     }
+
 
     if (!added_any)
     {
@@ -699,8 +714,8 @@ void prepare_next(orderqueue& q)
     cout << "Total price: " << ord->totalprice << endl;
     cout << "Drinks (LIFO):" << endl;
 
-    int        cnt    = 0;
-    long long  sugars = 0;
+    int cnt    = 0;
+    int sugars = 0;
 
     drinkitem it;
     // loop: pop from stack until empty (LIFO), also update local counts
@@ -738,7 +753,7 @@ void show_report()
     cout << "---" << endl;
 }
 
-// func: cancel_order -> parse id, find & remove from queue (no stat change)
+// func: cancel_order -> parse id, cind & remove from queue (no stat change)
 void cancel_order(orderqueue& q)
 {
     cout << "Enter Order No. to cancel: ";
@@ -751,23 +766,21 @@ void cancel_order(orderqueue& q)
 
     line = trim(line);
 
-    long long id;
+    int id;
     bool ok = false;
+    
+    istringstream iss(line);
+    if (iss >> id){
 
-    {
-        istringstream iss(line);
-        if (iss >> id)
+        string extra;
+        if (!(iss >> extra))
         {
-            string extra;
-            if (!(iss >> extra))
-            {
-                ok = true;
-            }
+            ok = true;
         }
     }
+    
 
-    if (!ok)
-    {
+    if (!ok) {
         cout << "Invalid input." << endl;
         cout << "---" << endl;
         return;
@@ -777,6 +790,7 @@ void cancel_order(orderqueue& q)
 
     if (res == -1)
     {
+
         cout << "No orders to cancel." << endl;
         cout << "---" << endl;
     }
@@ -805,7 +819,7 @@ void rush_order(orderqueue& q)
 
     line = trim(line);
 
-    long long id;
+    int id;
     bool ok = false;
 
     {
@@ -876,9 +890,6 @@ void exit_sequence(orderqueue& q)
 // func: main -> boot, load menu, then classic command loop, ends with cleanup
 int main()
 {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
     load_menu_startup();
 
     orderqueue q;
@@ -896,7 +907,7 @@ int main()
 
         line = trim(line);
 
-        int  choice = -1;
+        int choice = -1;
         bool ok = false;
 
         {
@@ -917,42 +928,35 @@ int main()
         {
             cout << "Invalid choice (1-8)." << endl;
             cout << "---" << endl;
-            continue;
         }
-
-        if (choice == 1)
-        {
-            show_menu_forward();
-        }
-        else if (choice == 2)
-        {
-            place_new_order(q);
-        }
-        else if (choice == 3)
-        {
-            prepare_next(q);
-        }
-        else if (choice == 4)
-        {
-            display_queue(q);
-        }
-        else if (choice == 5)
-        {
-            show_report();
-        }
-        else if (choice == 6)
-        {
-            cancel_order(q);
-        }
-        else if (choice == 7)
-        {
-            rush_order(q);
-        }
-        else if (choice == 8)
-        {
-            exit_sequence(q);
-            clear_menu_all();
-            return 0;
+        else {
+            if (choice == 1) {
+                show_menu_forward();
+            }
+            else if (choice == 2) {
+                place_new_order(q);
+            }
+            else if (choice == 3) {
+                prepare_next(q);
+            }
+            else if (choice == 4) {
+                display_queue(q);
+            }
+            else if (choice == 5) {
+                show_report();
+            }
+            else if (choice == 6) {
+                cancel_order(q);
+            }
+            else if (choice == 7) {
+                rush_order(q);
+            }
+            else if (choice == 8) {
+                exit_sequence(q);
+                clear_menu_all();
+                return 0;
+            }
         }
     }
 }
+
