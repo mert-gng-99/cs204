@@ -1,0 +1,8 @@
+apple apple keep	    test    stone
+tree     sky    apple  count
+apple     apple    apple	   apple apple apple
+grid    happy    yellow	    apple
+stone  apple   dog     sky  apple
+run	   tree   code
+apple     grid     apple	 stone
+count   yellow    run  thing
